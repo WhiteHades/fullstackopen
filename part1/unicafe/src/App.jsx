@@ -8,23 +8,65 @@ const Header2 = ({ header2 }) => {
   return <h1>{header2}</h1>;
 };
 
-const Button = ({ button1, button2, button3 }) => {
+const Button = ({ onClick1, onClick2, onClick3 }) => {
   return (
     <div>
-      <button>{button1}</button>
-      <button>{button2}</button>
-      <button>{button3}</button>
+      <button onClick={onClick1}>good</button>
+      <button onClick={onClick2}>neutral</button>
+      <button onClick={onClick3}>bad</button>
     </div>
   );
 };
 
-const Statistics = ({ good, bad, neutral }) => {
+const Statistics = ({ good, neutral, bad }) => {
+  const goodScore = 1;
+  const neutralScore = 0;
+  const badScore = -1;
+  const all = good + neutral + bad;
+  const average = all
+    ? (
+        (goodScore * good + neutralScore * neutral + badScore * bad) /
+        all
+      ).toFixed(2)
+    : 0;
+  const positive = all ? ((goodScore * good) / all).toFixed(2) : 0;
+
   return (
     <div>
-      <p> good {good}</p>
-      <p> bad {bad}</p>
-      <p> neutral {neutral}</p>
+      <table>
+        <tbody>
+          <tr>
+            <StatisticLine text="good" value={good} />
+          </tr>
+          <tr>
+            <StatisticLine text="neutral" value={neutral} />
+          </tr>
+          <tr>
+            <StatisticLine text="bad" value={bad} />
+          </tr>
+          <tr>
+            <StatisticLine text="all" value={all} />
+          </tr>
+          <tr>
+            <StatisticLine text="average" value={average} />
+          </tr>
+          <tr>
+            <StatisticLine text="positive" value={positive} percent={true} />
+          </tr>
+        </tbody>
+      </table>
     </div>
+  );
+};
+
+const StatisticLine = (props) => {
+  return (
+    <>
+      <td>{props.text}</td>
+      <td>
+        {props.value} {props.percent && "%"}
+      </td>
+    </>
   );
 };
 
@@ -37,12 +79,30 @@ const App = () => {
   const header = "give feedback";
   const header2 = "statistics";
 
+  const onGoodClick = () => {
+    setGood(good + 1);
+  };
+  const onNuetralClick = () => {
+    setNeutral(neutral + 1);
+  };
+  const onBadClick = () => {
+    setBad(bad + 1);
+  };
+
   return (
     <div>
       <Header header={header} />
-      <Button button1={good} button2={neutral} button3={bad} />
+      <Button
+        onClick1={onGoodClick}
+        onClick2={onNuetralClick}
+        onClick3={onBadClick}
+      />
       <Header2 header2={header2} />
-      <Statistics good={good} bad={bad} neutral={neutral} />
+      {good || neutral || bad ? (
+        <Statistics good={good} neutral={neutral} bad={bad} />
+      ) : (
+        "No feedback given"
+      )}
     </div>
   );
 };
