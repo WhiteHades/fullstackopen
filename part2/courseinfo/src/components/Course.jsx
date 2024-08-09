@@ -1,11 +1,11 @@
-const Header = ({ course }) => <h1>{course}</h1>;
+const Header = ({ course }) => <h2>{course}</h2>;
 
 const Total = ({ parts }) => {
   const exArr = parts.map((part) => part.exercises);
   const sum = exArr.reduce((a, b) => a + b, 0);
   return (
     <p>
-      <strong>total of exercises {sum}</strong>
+      <strong>total of {sum} exercises</strong>
     </p>
   );
 };
