@@ -12,6 +12,7 @@ const App = () => {
   const [newNumb, setNewNumb] = useState("");
   const [newFilt, setNewFilt] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [colour, setColour] = useState("green");
 
   useEffect(() => {
     personService.getAll().then((response) => setPersons(response));
@@ -38,19 +39,39 @@ const App = () => {
       id: `${persons.length + 1}`,
     };
 
-    const exists = persons.some((person) => person.name === newName);
+    const exists = persons.find((person) => person.name === newName);
 
     if (exists) {
-      setErrorMessage(`${newName} is already added to phonebook`);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService
+          .update(exists.id, nameObject)
+          .then((upPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== upPerson.id ? person : upPerson
+              )
+            );
+          })
+          .catch((error) => {
+            setColour("red");
+            setErrorMessage(
+              `Information of ${newName} has already been removed from the server`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+            setPersons(persons.filter((person) => person.id !== exists.id));
+          });
+      }
     } else {
       personService.create(nameObject).then((response) => {
         setPersons(persons.concat(response));
 
         setErrorMessage(`Added ${newName}`);
-
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
@@ -71,7 +92,7 @@ const App = () => {
       .then(() => {
         setPersons(persons.filter((person) => person.id !== id));
       })
-      .catch((error) => {
+      .catch(() => {
         alert(`Person already deleted`);
         setPersons(persons.filter((person) => person.id !== id));
       });
@@ -80,8 +101,14 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
-      <Filter newFilt={newFilt} handleFilterInput={handleFilterInput} />
+      <Notification
+        message={errorMessage}
+        colour={colour}
+      />
+      <Filter
+        newFilt={newFilt}
+        handleFilterInput={handleFilterInput}
+      />
       <h2>add a new</h2>
       <AddPeople
         addName={addName}
