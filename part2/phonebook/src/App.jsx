@@ -47,12 +47,14 @@ const App = () => {
 
     const exists = persons.some((person) => person.name === newName);
 
-    exists
-      ? alert(`${newName} is already added to phonebook`)
-      : setPersons(persons.concat(nameObject));
+    axios.post("http://localhost:3001/persons", nameObject).then((response) => {
+      exists
+        ? alert(`${newName} is already added to phonebook`)
+        : setPersons(persons.concat(nameObject));
 
-    setNewName("");
-    setNewNumb("");
+      setNewName("");
+      setNewNumb("");
+    });
   };
 
   const namesToShow = persons.filter((single) =>
@@ -62,7 +64,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter newFilt={newFilt} handleFilterInput={handleFilterInput} />
+      <Filter
+        newFilt={newFilt}
+        handleFilterInput={handleFilterInput}
+      />
       <h2>add a new</h2>
       <AddPeople
         addName={addName}
@@ -73,7 +78,12 @@ const App = () => {
       />
       <h2>Numbers</h2>
       {namesToShow.map((single) => {
-        return <Person key={single.id} person={single} />;
+        return (
+          <Person
+            key={single.id}
+            person={single}
+          />
+        );
       })}
       ;
     </div>
