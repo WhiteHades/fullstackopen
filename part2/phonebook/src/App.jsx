@@ -42,7 +42,6 @@ const App = () => {
       exists
         ? alert(`${newName} is already added to phonebook`)
         : setPersons(persons.concat(response));
-
       setNewName("");
       setNewNumb("");
     });
@@ -51,6 +50,18 @@ const App = () => {
   const namesToShow = persons.filter((single) =>
     single.name.toLowerCase().includes(newFilt.toLowerCase())
   );
+
+  const deletePerson = (id) => {
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      })
+      .catch((error) => {
+        alert(`Person already deleted`);
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+  };
 
   return (
     <div>
@@ -73,6 +84,7 @@ const App = () => {
           <Person
             key={single.id}
             person={single}
+            deletePerson={() => deletePerson(single.id)}
           />
         );
       })}
