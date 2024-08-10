@@ -3,26 +3,17 @@ import Person from "./component/Person";
 import Filter from "./component/Filter";
 import AddPeople from "./component/AddPeople";
 import axios from "axios";
+import personService from "./services/notes.js";
 
 const App = () => {
-  useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
-    });
-  }, []);
-
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumb, setNewNumb] = useState("");
   const [newFilt, setNewFilt] = useState("");
+
+  useEffect(() => {
+    personService.getAll().then((response) => setPersons(response));
+  }, []);
 
   const handleChangeName = (event) => {
     setNewName(event.target.value);
@@ -42,15 +33,15 @@ const App = () => {
     const nameObject = {
       name: newName,
       number: newNumb,
-      id: persons.length + 1,
+      id: `${persons.length + 1}`,
     };
 
     const exists = persons.some((person) => person.name === newName);
 
-    axios.post("http://localhost:3001/persons", nameObject).then((response) => {
+    personService.create(nameObject).then((response) => {
       exists
         ? alert(`${newName} is already added to phonebook`)
-        : setPersons(persons.concat(nameObject));
+        : setPersons(persons.concat(response));
 
       setNewName("");
       setNewNumb("");
