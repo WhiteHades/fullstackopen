@@ -1,5 +1,4 @@
 const CountryOne = ({ country }) => {
-  console.log(Object.values(country.languages));
   return (
     <>
       <h1>{country.name.common}</h1>
