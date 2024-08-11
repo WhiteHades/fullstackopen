@@ -44,7 +44,11 @@ function App() {
         {message ? (
           <Message message={message} />
         ) : countries.length === 1 ? (
-          <CountryOne country={countries[0]} />
+          <CountryOne
+            country={countries[0]}
+            lat={countries[0].latlng[0]}
+            lng={countries[0].latlng[1]}
+          />
         ) : (
           <Country countries={countries} />
         )}
